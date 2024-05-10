@@ -33,7 +33,27 @@ const getValidationErrors = (invoice) => {
     return validation.error?.details
         ?.map(({context, message}) => ({[context.key]: message}))
         .reduce((acc, obj) => Object.assign(acc, obj), {});
-}
+};
+
+const calculateInvoiceTotal = (total, rate) => {
+    if (!total || !rate) {
+        return NaN;
+    }
+
+    return total * rate;
+};
+
+const getRate = (rates, _currency) => {
+    const currency = String(_currency).trim().toUpperCase();
+
+    const rate = rates[currency];
+
+    if (!rate) {
+        return NaN;
+    }
+
+    return rate;
+};
 
 const getFileValidationSchema = (exactValue) => exactValue ? Joi.string().required().valid(exactValue).insensitive() : Joi.string().required();
 
@@ -66,4 +86,6 @@ module.exports = {
     getValidationErrors,
     validateFileSchema,
     toDate,
+    calculateInvoiceTotal,
+    getRate,
 }

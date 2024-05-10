@@ -1,4 +1,4 @@
-const {XLSX, getValidationErrors, validateFileSchema, toDate} = require("./utils");
+const {XLSX, getValidationErrors, validateFileSchema, toDate, calculateInvoiceTotal, getRate} = require("./utils");
 const {
     DATE_SELL,
     CURRENCY_RATES,
@@ -69,6 +69,14 @@ module.exports.uploadService = async (filePath, invoicingMonth) => {
             if (!(rowData[FIELDS_NAMES_ENUM.STATUS] === INVOICE_STATUSES.READY || rowData[FIELDS_NAMES_ENUM.INVOICE_NUMBER])) {
                 return;
             }
+
+            rowData[FIELDS_NAMES_ENUM.INVOICE_TOTAL] = calculateInvoiceTotal(
+                rowData[FIELDS_NAMES_ENUM.TOTAL],
+                getRate(
+                    currencyRates,
+                    rowData[FIELDS_NAMES_ENUM.INVOICE_CURRENCY],
+                )
+            )
 
             rowData.validationErrors = getValidationErrors(rowData);
 
